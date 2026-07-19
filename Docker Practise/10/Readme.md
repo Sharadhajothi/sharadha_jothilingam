@@ -1,0 +1,1 @@
+A Openshift cluster starts the conatiner with random non root UID. so the image shouldnt assign it a user and uid
