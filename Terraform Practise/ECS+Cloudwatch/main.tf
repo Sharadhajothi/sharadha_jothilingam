@@ -85,3 +85,30 @@ resource "aws_ecs_service" "my_ecs_service"{
     }
 
 }
+
+//Cloudwatch
+
+resource "aws_cloudwatch_log_group" "ecs_log_group"{
+    name = "/ecs/my_ecs"
+    retention_in_days = 30
+}
+
+resource "aws_sns_topic" "ecs_sns_topic"{
+    name = "ecs_sns_topic"
+}
+
+resource "aws_cloudwatch_metric_alarm" "ecs_metric_alarm"{
+    alarm_name = "ecs_metric_alarm"
+    metric_name = "CPUUtilization"
+    namespace = "AWS/ECS"
+    statistic = "Average"
+    period = 300
+    evaluation_periods = 3
+    threshold = 80
+    comparison_operator = "GreaterThanOrEqualToThreshold"
+    alarm_actions = [aws_sns_topic.ecs_sns_topic.arn]
+    dimensions = {
+  ClusterName = aws_ecs_cluster.my_ecs.name
+  ServiceName = aws_ecs_service.my_ecs_service.name
+}
+}
